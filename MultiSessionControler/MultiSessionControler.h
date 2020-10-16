@@ -73,8 +73,8 @@ public:
 	void registerRecvCallback(boost::function<void(char*, std::size_t, char)> f);
 
 	void disconnectSession(int objID);
-private:
-	void bufferQueueCheck();
+
+	void closeAllSocket();
 
 private:
 	friend Session;
@@ -100,16 +100,16 @@ private:
 	std::size_t maxBufferSize;
 	char* sendBuffer;
 
-	//std::queue<std::shared_ptr<BufferPacket>> InBufferQueue;
 	std::queue<std::shared_ptr<BufferPacket>> OutBufferQueue;
+	//std::queue<std::shared_ptr<BufferPacket>> InBufferQueue;
 	//std::queue<std::shared_ptr<BufferPacket>> InternalBufferQueue;
 
 	boost::mutex sessionMutex;
 
 	//boost::mutex sendMutex;
 	//boost::condition_variable sendConditionVar;
-	boost::mutex recvMutex;
-	boost::condition_variable recvConditionVar;
+	//boost::mutex recvMutex;
+	//boost::condition_variable recvConditionVar;
 	//boost::mutex internalMutex;
 	//boost::condition_variable internalConditionVar;
 

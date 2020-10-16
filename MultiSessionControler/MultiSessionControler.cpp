@@ -225,8 +225,28 @@ void MultiSessionControler::disconnectSession(int objID)
 	}
 }
 
-void MultiSessionControler::bufferQueueCheck()
+void MultiSessionControler::closeAllSocket()
 {
+	boost::lock_guard<boost::mutex> lk(sessionMutex);
+	while (1) {
+		std::vector<std::shared_ptr<Session>>::iterator it =
+			std::find_if(
+				_vec_socket.begin(),
+				_vec_socket.end(),
+				[&](const std::shared_ptr<Session>& session) { return session->isConnect; });
+
+		if (it == _vec_socket.end()) {
+			std::cout << "not found disconnectSeesion obj" << std::endl;
+			break;
+		}
+		else {
+			//int index = std::distance(_vec_socket.begin(), it);
+			--SocketActivateCount;
+			_vec_socket.erase(it);
+			std::cout << "Activate Socket = " << SocketActivateCount << std::endl;
+		}
+	}
+	_vec_socket.clear();
 }
 
 int MultiSessionControler::Session::objID_Creater = 0;

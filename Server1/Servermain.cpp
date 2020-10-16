@@ -20,24 +20,26 @@ int main() {
 
 	std::string str = "1";
 
+	
 
-	auto thread = std::thread([&] {
-		for (int i = 1; i <= 500; i++) {
-			if (i % 10 == 0) {
-				str.clear();
-			}
-			str.append("asd");
-			std::this_thread::sleep_for(std::chrono::milliseconds(33));
-			std::cout << i << " send" << std::endl;
-			char buffer[4096] = { 0, };
-			std::copy(str.c_str(), str.c_str() + str.length(), buffer);
+	//auto thread = std::thread([&] {
+	//	for (int i = 1; i <= 500; i++) {
+	//		if (i % 10 == 0) {
+	//			str.clear();
+	//		}
+	//		str.append("asd");
+	//		std::this_thread::sleep_for(std::chrono::milliseconds(33));
+	//		std::cout << i << " send" << std::endl;
+	//		char buffer[4096] = { 0, };
+	//		std::copy(str.c_str(), str.c_str() + str.length(), buffer);
 
-			test.write(buffer, str.length());
+	//		test.write(buffer, str.length());
 
-		}
-	});
-
-	thread.join();
+	//	}
+	//});
+	std::cin.get();
+	test.closeAllSocket();
+	//thread.join();
 
 	//bool tes1 = test._vec_socket[1]->is_open();
 	//std::cout << tes1 << std::endl;
