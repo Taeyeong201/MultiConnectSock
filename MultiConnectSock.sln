@@ -9,25 +9,55 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultiSessionControler", "Mu
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server1", "Server1\Server1.vcxproj", "{AACC6DD1-DFED-481D-8598-175D89206480}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boostChatServer", "boostChatServer\boostChatServer.vcxproj", "{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "boostChatClient", "boostChatClient\boostChatClient.vcxproj", "{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "chatMessage", "chatMessage\chatMessage.vcxitems", "{370873DB-D3ED-47F5-9012-1D51C2FB798E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SingleSessionHandle", "SingleSessionHandle\SingleSessionHandle.vcxitems", "{88EE662D-5191-44A4-A58F-6A543E03F0E5}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		MultiSessionControler\MultiSessionControler.vcxitems*{258090d1-8c05-4a91-a89d-68c1f9976d86}*SharedItemsImports = 4
+		chatMessage\chatMessage.vcxitems*{370873db-d3ed-47f5-9012-1d51c2fb798e}*SharedItemsImports = 9
 		MultiSessionControler\MultiSessionControler.vcxitems*{3738bbe0-1f0d-47e2-aa00-9b8909970c3a}*SharedItemsImports = 9
+		SingleSessionHandle\SingleSessionHandle.vcxitems*{88ee662d-5191-44a4-a58f-6a543e03f0e5}*SharedItemsImports = 9
+		chatMessage\chatMessage.vcxitems*{8dc42ede-26e5-41d0-aa56-dac7f104ab18}*SharedItemsImports = 4
+		chatMessage\chatMessage.vcxitems*{8fffea5f-19c0-4c2c-bd76-851423d955c0}*SharedItemsImports = 4
 		MultiSessionControler\MultiSessionControler.vcxitems*{aacc6dd1-dfed-481d-8598-175d89206480}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{258090D1-8C05-4A91-A89D-68C1F9976D86}.Debug|x64.ActiveCfg = Debug|x64
 		{258090D1-8C05-4A91-A89D-68C1F9976D86}.Debug|x64.Build.0 = Debug|x64
+		{258090D1-8C05-4A91-A89D-68C1F9976D86}.Debug|x86.ActiveCfg = Debug|x64
 		{258090D1-8C05-4A91-A89D-68C1F9976D86}.Release|x64.ActiveCfg = Release|x64
 		{258090D1-8C05-4A91-A89D-68C1F9976D86}.Release|x64.Build.0 = Release|x64
+		{258090D1-8C05-4A91-A89D-68C1F9976D86}.Release|x86.ActiveCfg = Release|x64
 		{AACC6DD1-DFED-481D-8598-175D89206480}.Debug|x64.ActiveCfg = Debug|x64
 		{AACC6DD1-DFED-481D-8598-175D89206480}.Debug|x64.Build.0 = Debug|x64
+		{AACC6DD1-DFED-481D-8598-175D89206480}.Debug|x86.ActiveCfg = Debug|x64
 		{AACC6DD1-DFED-481D-8598-175D89206480}.Release|x64.ActiveCfg = Release|x64
 		{AACC6DD1-DFED-481D-8598-175D89206480}.Release|x64.Build.0 = Release|x64
+		{AACC6DD1-DFED-481D-8598-175D89206480}.Release|x86.ActiveCfg = Release|x64
+		{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}.Debug|x64.ActiveCfg = Debug|x64
+		{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}.Debug|x64.Build.0 = Debug|x64
+		{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}.Debug|x86.ActiveCfg = Debug|x64
+		{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}.Release|x64.ActiveCfg = Release|x64
+		{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}.Release|x64.Build.0 = Release|x64
+		{8FFFEA5F-19C0-4C2C-BD76-851423D955C0}.Release|x86.ActiveCfg = Release|x64
+		{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}.Debug|x64.ActiveCfg = Debug|x64
+		{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}.Debug|x64.Build.0 = Debug|x64
+		{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}.Debug|x86.ActiveCfg = Debug|x64
+		{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}.Release|x64.ActiveCfg = Release|x64
+		{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}.Release|x64.Build.0 = Release|x64
+		{8DC42EDE-26E5-41D0-AA56-DAC7F104AB18}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
