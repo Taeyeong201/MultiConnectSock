@@ -40,7 +40,7 @@ class MultiSessionControler
 		boost::asio::ip::tcp::socket _socket;
 
 		int send();
-		int recv(char* buf,const std::size_t& size);
+		int recv(char* buf, const std::size_t& size);
 
 		bool isConnect;
 		int objectID;
@@ -74,7 +74,7 @@ public:
 	void connect();
 
 	int write(char* buf, std::size_t& size);
-	int read(char* buf,const std::size_t& size);
+	int read(char* buf, const std::size_t& size);
 
 	//void registerRecvCallback(boost::function<void(char*, std::size_t, char)> f);
 	void closeAllSocket();

@@ -1,4 +1,41 @@
+#define SINGLE 1
+#ifdef SINGLE
+#include "SessionHandle.h"
 
+int main() {
+
+	SessionHandle sessionClient;
+	sessionClient.initClientMode("127.0.0.1", 12345);
+	sessionClient.connect();
+
+	std::shared_ptr<char> buf = std::make_shared<char>(4096);
+	memset(buf.get(), 0, 4096);
+
+	//sessionClient.channel_.write(buf.get(), 100);
+
+	system("PAUSE");
+
+	
+	std::thread([&] {
+		for (int i = 0; i < 8000; i++) {
+			memset(buf.get(), 0, 4096);
+			int readSize = sessionClient.channel_.read(buf.get(), 4096);
+			if (readSize > 0)
+				std::cout << "(" << i << "/" << readSize << ") "
+				<< std::string(buf.get(), readSize) << std::endl;
+			else break;
+		}
+	}).join();
+
+
+
+	sessionClient.close();
+	system("PAUSE");
+
+	return 0;
+}
+
+#else
 #include "MultiSessionControler.h"
 
 struct test {
@@ -97,3 +134,4 @@ int main() {
 	system("PAUSE");
 	return 0;
 }
+#endif

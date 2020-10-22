@@ -15,11 +15,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)BufferPacket.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)Channel.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)Session.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)SessionHandle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)BufferPacket.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)Channel.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)Session.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)SessionHandle.h" />
   </ItemGroup>

@@ -14,150 +14,121 @@ static void boostErrorHandler(const char* BeforeFucName, const int BeforeFucLine
 	g_Mutex.unlock();
 }
 
-boost::asio::io_context SessionHandleServer::IOCtx;
+boost::asio::io_context SessionHandle::IOCtx;
 
-SessionHandleServer::SessionHandleServer()
+SessionHandle::SessionHandle()
 	:
-	//recvStrand(IOCtx),
-	//bufferPopStrand(IOCtx),
-	_lock_work(std::make_shared<boost::asio::io_context::work>(IOCtx)),
-	maxBufferSize(0)
+	_lock_work(std::make_shared<boost::asio::io_context::work>(IOCtx))
 {
 	for (int i = 0; i < 7; i++)
 		_IO_Workers.create_thread(boost::bind(&boost::asio::io_context::run, &IOCtx));
-
-	//_vec_socket.reserve(10);
 }
 
-SessionHandleServer::~SessionHandleServer()
+SessionHandle::~SessionHandle()
 {
-
 	_lock_work.reset();
 	IOCtx.stop();
 	_IO_Workers.join_all();
-
 }
 
-int SessionHandleServer::initServerMode(const unsigned short port, std::size_t maxBufSize)
+int SessionHandle::initServerMode(const unsigned short port)
 {
 	address = boost::asio::ip::tcp::endpoint(
 		boost::asio::ip::tcp::v4(), port);
 	_acceptor = std::make_unique<boost::asio::ip::tcp::acceptor>(IOCtx, address);
 
-	maxBufferSize = maxBufSize;
-
 	return 0;
 }
 
-int SessionHandleServer::initClientMode(const std::string& serverIP, const unsigned short port, std::size_t maxBufSize)
+int SessionHandle::initClientMode(const std::string& serverIP, const unsigned short port)
 {
 	address = boost::asio::ip::tcp::endpoint(
 		boost::asio::ip::address::from_string(serverIP), port);
 
-	maxBufferSize = maxBufSize;
-
-
 	return 0;
 }
 
-void SessionHandleServer::initNodelayOpt(bool onoff)
+void SessionHandle::initNodelayOpt(bool onoff)
 {
-	nodelay = onoff;
+	nodelay_ = onoff;
 }
 
-void SessionHandleServer::acceptor()
+void SessionHandle::acceptor()
 {
-	boost::asio::ip::tcp::socket sock(IOCtx);
+	boost::asio::ip::tcp::socket socket(IOCtx);
 	boost::system::error_code ec;
 
-	_acceptor->accept(sock, ec);
+	_acceptor->accept(socket, ec);
 	if (!ec) {
 		std::cout << "Client Accept success" << std::endl;
 		std::cout << "Local Endpoint: "
-			<< sock.local_endpoint().address().to_string() << ", "
-			<< sock.local_endpoint().port() << std::endl;
+			<< socket.local_endpoint().address().to_string() << ", "
+			<< socket.local_endpoint().port() << std::endl;
 		std::cout << "Remote Endpoint: "
-			<< sock.remote_endpoint().address().to_string() << ", "
-			<< sock.remote_endpoint().port() << std::endl;
+			<< socket.remote_endpoint().address().to_string() << ", "
+			<< socket.remote_endpoint().port() << std::endl;
 
-		//SocketActivateCount++;
-		//_vec_socket.insert(std::make_shared<Session>(std::move(sock), this, maxBufferSize));
-		////_vec_socket.back()->init(this);
-		//_vec_socket.back()->registerDisconnectCallBack(
-		//	boost::bind(&SessionHandleServer::disconnectSession, this, boost::placeholders::_1));
-		//_vec_socket.back()->registerBufPopCallBack(
-		//	boost::bind(&SessionHandleServer::bufQueueChecker, this));
-		//_vec_socket.back()->_socket.set_option(boost::asio::ip::tcp::no_delay(nodelay));
+		socket.set_option(boost::asio::ip::tcp::no_delay(nodelay_));
+		boost::shared_ptr<Session> session(new Session(socket, IOCtx, channel_));
+		session->start();
+
 	}
 	else {
 		boostErrorHandler(__FUNCTION__, __LINE__, ec);
 	}
 }
 
-void SessionHandleServer::async_acceptor()
+void SessionHandle::async_acceptor()
 {
 	_acceptor->async_accept([this](
 		boost::system::error_code ec,
 		boost::asio::ip::tcp::socket socket) {
-		if (!ec) {
-			std::cout << "Client Accept success" << std::endl;
-			std::cout << "Local Endpoint: "
-				<< socket.local_endpoint().address().to_string() << ", "
-				<< socket.local_endpoint().port() << std::endl;
-			std::cout << "Remote Endpoint: "
-				<< socket.remote_endpoint().address().to_string() << ", "
-				<< socket.remote_endpoint().port() << std::endl;
+			if (!ec) {
+				std::cout << "Client Accept success" << std::endl;
+				std::cout << "Local Endpoint: "
+					<< socket.local_endpoint().address().to_string() << ", "
+					<< socket.local_endpoint().port() << std::endl;
+				std::cout << "Remote Endpoint: "
+					<< socket.remote_endpoint().address().to_string() << ", "
+					<< socket.remote_endpoint().port() << std::endl;
 
-			//SocketActivateCount++;
-			//_vec_socket.push_back(std::make_shared<Session>(std::move(socket), this, maxBufferSize));
-			////_vec_socket.back()->init(this);
-			//_vec_socket.back()->registerDisconnectCallBack(
-			//	boost::bind(&SessionHandleServer::disconnectSession, this, boost::placeholders::_1));
-			//_vec_socket.back()->registerBufPopCallBack(
-			//	boost::bind(&SessionHandleServer::bufQueueChecker, this));
-			//_vec_socket.back()->_socket.set_option(boost::asio::ip::tcp::no_delay(nodelay));
+				socket.set_option(boost::asio::ip::tcp::no_delay(nodelay_));
+				boost::shared_ptr<Session> session(new Session(socket, IOCtx, channel_));
+				session->start();
 
-			//std::cout << "Activate Socket = " << SocketActivateCount << std::endl;
-
-			async_acceptor();
-		}
-		else {
-			boostErrorHandler(__FUNCTION__, __LINE__, ec);
-		}
-	});
+				async_acceptor();
+			}
+			else {
+				boostErrorHandler(__FUNCTION__, __LINE__, ec);
+			}
+		});
 }
 
-void SessionHandleServer::connect()
+void SessionHandle::connect()
 {
-	boost::asio::ip::tcp::socket sock(IOCtx);
+	boost::asio::ip::tcp::socket socket(IOCtx);
 	boost::system::error_code ec;
 
-	sock.connect(address, ec);
+	socket.connect(address, ec);
 	if (!ec) {
 		std::cout << "Server Connect success" << std::endl;
 		std::cout << "Local Endpoint: "
-			<< sock.local_endpoint().address().to_string() << ", "
-			<< sock.local_endpoint().port() << std::endl;
+			<< socket.local_endpoint().address().to_string() << ", "
+			<< socket.local_endpoint().port() << std::endl;
 		std::cout << "Remote Endpoint: "
-			<< sock.remote_endpoint().address().to_string() << ", "
-			<< sock.remote_endpoint().port() << std::endl;
+			<< socket.remote_endpoint().address().to_string() << ", "
+			<< socket.remote_endpoint().port() << std::endl;
 
-		//SocketActivateCount++;
-		//_vec_socket.push_back(std::make_shared<Session>(std::move(sock), this, maxBufferSize));
-		//_vec_socket.back()->registerDisconnectCallBack(
-		//	boost::bind(&SessionHandleServer::disconnectSession, this, boost::placeholders::_1));
-		//_vec_socket.back()->registerBufPopCallBack(
-		//	boost::bind(&SessionHandleServer::bufQueueChecker, this));
-		//_vec_socket.back()->_socket.set_option(boost::asio::ip::tcp::no_delay(nodelay));
-
-		//std::cout << "Activate Socket = " << SocketActivateCount << std::endl;
+		socket.set_option(boost::asio::ip::tcp::no_delay(nodelay_));
+		boost::shared_ptr<Session> session(new Session(socket, IOCtx, channel_));
+		session->start();
 	}
 	else {
 		boostErrorHandler(__FUNCTION__, __LINE__, ec);
 	}
 }
 
-void SessionHandleServer::close()
+void SessionHandle::close()
 {
+	channel_.closeAllSession();
 }
-

@@ -20,6 +20,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		MultiSessionControler\MultiSessionControler.vcxitems*{258090d1-8c05-4a91-a89d-68c1f9976d86}*SharedItemsImports = 4
+		SingleSessionHandle\SingleSessionHandle.vcxitems*{258090d1-8c05-4a91-a89d-68c1f9976d86}*SharedItemsImports = 4
 		chatMessage\chatMessage.vcxitems*{370873db-d3ed-47f5-9012-1d51c2fb798e}*SharedItemsImports = 9
 		MultiSessionControler\MultiSessionControler.vcxitems*{3738bbe0-1f0d-47e2-aa00-9b8909970c3a}*SharedItemsImports = 9
 		SingleSessionHandle\SingleSessionHandle.vcxitems*{88ee662d-5191-44a4-a58f-6a543e03f0e5}*SharedItemsImports = 9
