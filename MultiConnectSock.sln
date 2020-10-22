@@ -26,6 +26,7 @@ Global
 		chatMessage\chatMessage.vcxitems*{8dc42ede-26e5-41d0-aa56-dac7f104ab18}*SharedItemsImports = 4
 		chatMessage\chatMessage.vcxitems*{8fffea5f-19c0-4c2c-bd76-851423d955c0}*SharedItemsImports = 4
 		MultiSessionControler\MultiSessionControler.vcxitems*{aacc6dd1-dfed-481d-8598-175d89206480}*SharedItemsImports = 4
+		SingleSessionHandle\SingleSessionHandle.vcxitems*{aacc6dd1-dfed-481d-8598-175d89206480}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
