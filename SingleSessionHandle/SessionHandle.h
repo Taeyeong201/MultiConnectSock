@@ -15,6 +15,7 @@
 
 #include "Session.h"
 
+
 class SessionHandleServer
 {
 public:
@@ -31,45 +32,24 @@ public:
 
 	void connect();
 
-	int write(char* buf, std::size_t& size);
-	int read(char* buf,const std::size_t& size);
-
-	//void registerRecvCallback(boost::function<void(char*, std::size_t, char)> f);
-	void closeAllSocket();
-private:
-	void disconnectSession(std::shared_ptr<Session> objID);
-	void bufQueueChecker();
+	void close();
 
 private:
 	friend Session;
 
 	boost::thread_group _IO_Workers;
-	boost::asio::io_service::strand recvStrand;
-	boost::asio::io_service::strand bufferPopStrand;
+	//boost::asio::io_service::strand recvStrand;
+	//boost::asio::io_service::strand bufferPopStrand;
 	std::shared_ptr<boost::asio::io_service::work> _lock_work;
 
 	std::unique_ptr<boost::asio::ip::tcp::acceptor>	_acceptor;
-
-	std::set<std::shared_ptr<Session>> _vec_socket;
 	boost::asio::ip::tcp::endpoint address;
-
-	struct BufferPacket {
-		std::size_t size;
-		std::shared_ptr<char[]> dataBuf;
-		std::atomic<int> cnt;
-	};
-
-	boost::function<void(char*, std::size_t, char)> recvCall;
 
 	bool nodelay = false;
 
 	std::size_t maxBufferSize;
-	char* sendBuffer;
 
-	std::queue<std::shared_ptr<BufferPacket>> OutBufferQueue;
+	Channel channel;
 
-	boost::mutex sessionMutex;
-
-	int SocketActivateCount;
 	static boost::asio::io_context IOCtx;
 };

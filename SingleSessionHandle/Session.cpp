@@ -28,22 +28,55 @@ int Session::objID_Creater = 0;
 //	//});
 //}
 
-Session::Session(
-	boost::asio::ip::tcp::socket sock,
-	//SessionControler* _handle,
-	std::size_t maxbufsize)
-	:
-	_socket(std::move(sock)),
-	//taskStrand(IOCtx),
-	objectID(objID_Creater++),
-	isConnect(true)/*, handle(_handle)*/
+BaseSession::BaseSession()
+	: objectID(objID_Creater++)
 {
+}
+
+void Channel::joinSession(boost::shared_ptr<BaseSession> session)
+{
+	sessions_.insert(session);
+}
+
+void Channel::registerDisConnectAllSession(boost::function<void()> f)
+{
+	disconnectAll = f;
+}
+
+void Channel::closeAllSocket()
+{
+}
+
+int Channel::write(char* buf, std::size_t size)
+{
+	BufferPacket buffer(buf, size);
+	std::for_each(sessions_.begin(), sessions_.end(),
+		boost::bind(&Session::writeHandle, boost::placeholders::_1, boost::ref(buffer)));
+	return 0;
+}
+
+int Channel::read(char* buf, const std::size_t& size)
+{
+	return 0;
+}
+
+void Channel::disconnectSession(boost::shared_ptr<BaseSession> session)
+{
+	sessions_.erase(session);
+}
+
+Session::Session(
+	boost::asio::ip::tcp::socket sock, 
+	boost::asio::io_context& ioc, 
+	Channel& channel, std::size_t maxbuf)
+	: channel_(channel), socket_(std::move(sock))
+{
+
 }
 
 Session::~Session()
 {
-	isConnect = false;
-	_socket.close();
+	socket_.close();
 	//_socket.lowest_layer().release();
 
 	//handle->internalConditionVar.notify_all();
@@ -59,96 +92,86 @@ Session::~Session()
 	std::cout << "Session Close obj_id=" << objectID << std::endl;
 }
 
-void Session::registerDisconnectCallBack(boost::function<void(int)> f)
-{
-	disconnectSessionCall = f;
-}
-
-void Session::registerBufPopCallBack(boost::function<void()> f)
-{
-	bufferPopCall = f;
-}
-
 void Session::disconect()
 {
-	isConnect = false;
-	disconnectSessionCall(objectID);
+	channel_.disconnectSession(shared_from_this());
 }
 
-int Session::send()
+int Session::writeHandle(BufferPacket& buffer)
 {
+	BufferPacket tmp(buffer.buf_, buffer.size_);
+
+
 	//if (!isConnect) {
-	//	std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send disconnect" << std::endl;
+//	std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send disconnect" << std::endl;
 
-	//	return -1;
-	//}
+//	return -1;
+//}
 
-	//boost::system::error_code ec;
-	//if (handle->OutBufferQueue.empty()) {
-	//	std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send Queue Empty" << std::endl;
-	//	return -1;
-	//}
-	//else {
-	//	char* front = handle->OutBufferQueue.front()->dataBuf.get();
-	//	int bufSize = handle->OutBufferQueue.front()->size;
+//boost::system::error_code ec;
+//if (handle->OutBufferQueue.empty()) {
+//	std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send Queue Empty" << std::endl;
+//	return -1;
+//}
+//else {
+//	char* front = handle->OutBufferQueue.front()->dataBuf.get();
+//	int bufSize = handle->OutBufferQueue.front()->size;
 
-	//	std::unique_ptr<char[]> tmp = std::make_unique<char[]>(bufSize);
-	//	std::copy(front, front + bufSize, tmp.get());
+//	std::unique_ptr<char[]> tmp = std::make_unique<char[]>(bufSize);
+//	std::copy(front, front + bufSize, tmp.get());
 
-	//	IOCtx.post(boost::asio::bind_executor(
-	//		handle->bufferPopStrand, bufferPopCall));
+//	IOCtx.post(boost::asio::bind_executor(
+//		handle->bufferPopStrand, bufferPopCall));
 
-	//	handle->sessionMutex.lock();
-	//	std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send" << std::endl;
-	//	std::size_t size = _socket.write_some(boost::asio::buffer(
-	//		tmp.get(),
-	//		bufSize), ec);
-	//	handle->sessionMutex.unlock();
+//	handle->sessionMutex.lock();
+//	std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send" << std::endl;
+//	std::size_t size = _socket.write_some(boost::asio::buffer(
+//		tmp.get(),
+//		bufSize), ec);
+//	handle->sessionMutex.unlock();
 
-	//	if (!ec) {
-	//		//_socket.shutdown(boost::asio::socket_base::shutdown_send);
-	//		std::cerr << __FUNCTION__ << "@" << __LINE__ << "write Size : " << size << std::endl;
+//	if (!ec) {
+//		//_socket.shutdown(boost::asio::socket_base::shutdown_send);
+//		std::cerr << __FUNCTION__ << "@" << __LINE__ << "write Size : " << size << std::endl;
 
-	//	}
-	//	else {
-	//		std::cerr << "Session error ID : " << objectID << std::endl;
-	//		boostErrorHandler(__FUNCTION__, __LINE__, ec);
-	//		IOCtx.post(boost::asio::bind_executor(
-	//			handle->bufferPopStrand, boost::bind(&Session::disconect, this)));
-	//		return -1;
-	//	}
-	//}
-
-
-
+//	}
+//	else {
+//		std::cerr << "Session error ID : " << objectID << std::endl;
+//		boostErrorHandler(__FUNCTION__, __LINE__, ec);
+//		IOCtx.post(boost::asio::bind_executor(
+//			handle->bufferPopStrand, boost::bind(&Session::disconect, this)));
+//		return -1;
+//	}
+//}
 
 
 	return 0;
 }
 
-int Session::recv(char* buf, const std::size_t& size)
+int Session::recv(BufferPacket&)
 {
-	boost::system::error_code ec;
+	//boost::system::error_code ec;
 
-	int readSize = 0;
+	//int readSize = 0;
 
-	if (_socket.is_open()) {
-		readSize = _socket.read_some(boost::asio::buffer(buf, size), ec);
-		if (ec) {
-			std::cout << "Session error ID : " << objectID << std::endl;
-			//handle->InBufferQueue.front()->size = -ec.value();
-			boostErrorHandler(__FUNCTION__, __LINE__, ec);
+	//if (socket_.is_open()) {
+	//	readSize = socket_.read_some(boost::asio::buffer(buf, size), ec);
+	//	if (ec) {
+	//		std::cout << "Session error ID : " << objectID << std::endl;
+	//		//handle->InBufferQueue.front()->size = -ec.value();
+	//		boostErrorHandler(__FUNCTION__, __LINE__, ec);
 
-			disconect();
-			return -1;
-		}
-	}
-	else {
-		disconect();
-		return -1;
-	}
+	//		disconect();
+	//		return -1;
+	//	}
+	//}
+	//else {
+	//	disconect();
+	//	return -1;
+	//}
 
-	return readSize;
+	//return readSize;
+
 }
 
 //void Session::bufQueueChecker()
@@ -163,20 +186,3 @@ int Session::recv(char* buf, const std::size_t& size)
 //	}
 //}
 
-bool Session::operator==(const Session& rhs)
-{
-	if (objectID == rhs.objectID)
-		return true;
-	else {
-		return false;
-	}
-}
-
-bool Session::operator==(const int& rhs)
-{
-	if (objectID == rhs)
-		return true;
-	else {
-		return false;
-	}
-}
