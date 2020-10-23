@@ -31,7 +31,7 @@ int main() {
 				str.clear();
 			}
 			str.append("asd");
-			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 			std::cout << i << " send" << std::endl;
 			char buffer[4096] = { 0, };
 			std::copy(str.c_str(), str.c_str() + str.length(), buffer);

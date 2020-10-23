@@ -4,13 +4,13 @@ static std::mutex g_Mutex;
 static void boostErrorHandler(const char* BeforeFucName, const int BeforeFucLine, const boost::system::error_code& ec)
 {
 	g_Mutex.lock();
-	std::cerr << "{" << std::endl;
-	std::cerr << "      Issue Func Name at : " << BeforeFucName << std::endl;
-	std::cerr << "            Func Line at : " << BeforeFucLine << std::endl;
-	std::cerr << "                 name    :  " << ec.category().name() << std::endl;
-	std::cerr << "                 value   :  " << ec.value() << std::endl;
-	std::cerr << "                 message :  " << ec.message() << std::endl;
-	std::cerr << "}" << std::endl;
+	std::cout << "{" << std::endl;
+	std::cout << "      Issue Func Name at : " << BeforeFucName << std::endl;
+	std::cout << "            Func Line at : " << BeforeFucLine << std::endl;
+	std::cout << "                 name    :  " << ec.category().name() << std::endl;
+	std::cout << "                 value   :  " << ec.value() << std::endl;
+	std::cout << "                 message :  " << ec.message() << std::endl;
+	std::cout << "}" << std::endl;
 	g_Mutex.unlock();
 }
 
@@ -20,7 +20,7 @@ SessionHandle::SessionHandle()
 	:
 	_lock_work(std::make_shared<boost::asio::io_context::work>(IOCtx))
 {
-	for (int i = 0; i < 7; i++)
+	for (int i = 0; i < 4; i++)
 		_IO_Workers.create_thread(boost::bind(&boost::asio::io_context::run, &IOCtx));
 }
 

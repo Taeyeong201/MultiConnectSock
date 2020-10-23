@@ -4,13 +4,13 @@ static std::mutex g_Mutex;
 static void boostErrorHandler(const char* BeforeFucName, const int BeforeFucLine, const boost::system::error_code& ec)
 {
 	g_Mutex.lock();
-	std::cerr << "{" << std::endl;
-	std::cerr << "      Issue Func Name at : " << BeforeFucName << std::endl;
-	std::cerr << "            Func Line at : " << BeforeFucLine << std::endl;
-	std::cerr << "                 name    :  " << ec.category().name() << std::endl;
-	std::cerr << "                 value   :  " << ec.value() << std::endl;
-	std::cerr << "                 message :  " << ec.message() << std::endl;
-	std::cerr << "}" << std::endl;
+	std::cout << "{" << std::endl;
+	std::cout << "      Issue Func Name at : " << BeforeFucName << std::endl;
+	std::cout << "            Func Line at : " << BeforeFucLine << std::endl;
+	std::cout << "                 name    :  " << ec.category().name() << std::endl;
+	std::cout << "                 value   :  " << ec.value() << std::endl;
+	std::cout << "                 message :  " << ec.message() << std::endl;
+	std::cout << "}" << std::endl;
 	g_Mutex.unlock();
 }
 
@@ -161,7 +161,7 @@ void MultiSessionControler::connect()
 
 int MultiSessionControler::write(char* buf, std::size_t& size)
 {
-	std::cerr << __FUNCTION__ << "@" << __LINE__ << "buffer write in" << std::endl;
+	std::cout << __FUNCTION__ << "@" << __LINE__ << "buffer write in" << std::endl;
 	if (SocketActivateCount < 1) return -1;
 	std::shared_ptr<BufferPacket> tmp = std::make_shared<BufferPacket>();
 	tmp->size = size;
@@ -192,7 +192,7 @@ int MultiSessionControler::read(char* buf,const std::size_t& size)
 {
 	int status = -1;
 	if (SocketActivateCount < 1) {
-		std::cerr << __FUNCTION__ << "@" << __LINE__ << "not found active socket" << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ << "not found active socket" << std::endl;
 		return status;
 	}
 	else if (SocketActivateCount == 1) {
@@ -200,7 +200,7 @@ int MultiSessionControler::read(char* buf,const std::size_t& size)
 		status = socket->recv(buf, size);
 	}
 	else {
-		std::cerr << __FUNCTION__ << "@" << __LINE__ << "have many activation sockets" << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ << "have many activation sockets" << std::endl;
 		//TODO:: 여러 소캣의 recv처리
 		auto socket = _vec_socket.front();
 		status = socket->recv(buf, size);
@@ -245,7 +245,7 @@ void MultiSessionControler::bufQueueChecker()
 		OutBufferQueue.pop();
 		sessionMutex.unlock();
 
-		std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session OutQueue pop" << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ << "Session OutQueue pop" << std::endl;
 	}
 }
 
@@ -337,14 +337,14 @@ void MultiSessionControler::Session::disconect()
 int MultiSessionControler::Session::send()
 {
 	if (!isConnect) {
-		std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send disconnect" << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ << "Session send disconnect" << std::endl;
 
 		return -1;
 	}
 
 	boost::system::error_code ec;
 	if (handle->OutBufferQueue.empty()) {
-		std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send Queue Empty" << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ << "Session send Queue Empty" << std::endl;
 		return -1;
 	}
 	else {
@@ -358,7 +358,7 @@ int MultiSessionControler::Session::send()
 			handle->bufferPopStrand, bufferPopCall));
 
 		handle->sessionMutex.lock();
-		std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session send" << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ << "Session send" << std::endl;
 		std::size_t size = _socket.write_some(boost::asio::buffer(
 			tmp.get(),
 			bufSize), ec);
@@ -366,11 +366,11 @@ int MultiSessionControler::Session::send()
 
 		if (!ec) {
 			//_socket.shutdown(boost::asio::socket_base::shutdown_send);
-			std::cerr << __FUNCTION__ << "@" << __LINE__ << "write Size : " << size << std::endl;
+			std::cout << __FUNCTION__ << "@" << __LINE__ << "write Size : " << size << std::endl;
 
 		}
 		else {
-			std::cerr << "Session error ID : " << objectID << std::endl;
+			std::cout << "Session error ID : " << objectID << std::endl;
 			boostErrorHandler(__FUNCTION__, __LINE__, ec);
 			IOCtx.post(boost::asio::bind_executor(
 				handle->bufferPopStrand, boost::bind(&Session::disconect, this)));
@@ -418,7 +418,7 @@ int MultiSessionControler::Session::recv(char* buf,const std::size_t& size)
 //		handle->OutBufferQueue.pop();
 //		handle->sessionMutex.unlock();
 //
-//		std::cerr << __FUNCTION__ << "@" << __LINE__ << "Session OutQueue pop" << std::endl;
+//		std::cout << __FUNCTION__ << "@" << __LINE__ << "Session OutQueue pop" << std::endl;
 //	}
 //}
 
