@@ -16,7 +16,7 @@ public:
 
 	boost::asio::ip::tcp::socket socket_;
 
-	std::size_t writeHandle(const BufferPacket&) override;
+	std::size_t writeHandle(const BufferPacket&, boost::system::error_code&) override;
 	std::size_t readHandle(char*, const std::size_t&) override;
 	void disconnect() override;
 

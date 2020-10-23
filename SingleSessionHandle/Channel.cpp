@@ -20,13 +20,15 @@ void Channel::closeAllSession()
 		boost::bind(&BaseSession::disconnect, boost::placeholders::_1));
 }
 
-int Channel::write(char* buf, std::size_t size)
+boost::system::error_code Channel::write(char* buf, std::size_t size)
 {
 	BufferPacket buffer(buf, size);
+	boost::system::error_code ec;
 	std::for_each(sessions_.begin(), sessions_.end(),
-		boost::bind(&BaseSession::writeHandle, boost::placeholders::_1, boost::ref(buffer)));
+		boost::bind(&BaseSession::writeHandle, boost::placeholders::_1,
+			boost::ref(buffer), boost::ref(ec)));
 
-	return 0;
+	return ec;
 }
 
 int Channel::read(char* buf, const std::size_t& size)
@@ -46,4 +48,7 @@ int Channel::countAliveSocket()
 void Channel::disconnectSession(boost::shared_ptr<BaseSession> session)
 {
 	sessions_.erase(session);
+	if (sessions_.empty()) {
+		//TODO AllDisconnect CallBack
+	}
 }

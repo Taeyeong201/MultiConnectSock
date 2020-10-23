@@ -1,5 +1,5 @@
-#define SINGLE 1
-#ifdef SINGLE
+#define SINGLE 0
+#ifndef SINGLE
 #include "SessionHandle.h"
 
 int main() {
@@ -40,7 +40,7 @@ int main() {
 }
 
 #else
-#include "MultiSessionControler.h"
+#include "SessionHandle.h"
 
 struct test {
 	unsigned int a;
@@ -59,12 +59,12 @@ public:
 
 int main() {
 
-	MultiSessionControler client;
-	MultiSessionControler client1;
-	MultiSessionControler client2;
-	client.initClientMode("127.0.0.1", 8090, 1000*1000);
-	client1.initClientMode("127.0.0.1", 8091, 1000*1000);
-	client2.initClientMode("127.0.0.1", 8092, 1000*1000);
+	SessionHandle client;
+	SessionHandle client1;
+	SessionHandle client2;
+	client.initClientMode("192.168.0.201", 8090);
+	client1.initClientMode("192.168.0.201", 8091);
+	client2.initClientMode("192.168.0.201", 8092);
 	//client.initClientMode("192.168.0.68", 12345, 1000*1000);
 	client.connect();
 	client1.connect();
@@ -80,7 +80,8 @@ int main() {
 	//else if (t == 'x') {
 	//	client.closeAllSocket();
 	//}
-	std::shared_ptr<bufferTest> buf = std::make_shared<bufferTest>(1920*1080);
+	//std::shared_ptr<bufferTest> buf = std::make_shared<bufferTest>(1920*1080);
+	char* buf = new char[1920 * 1080 * 3 / 2];
 
 	
 	std::thread([&] {
@@ -99,25 +100,25 @@ int main() {
 		//	}
 		//	std::cout << std::string(buf) << std::endl;
 
-		client.read(buf.get()->buf, 72);
-		std::cout << "read 1 size : " << 72 << std::endl;
+		//client.read(buf, 72);
+		//std::cout << "read 1 size : " << 72 << std::endl;
 
-		client.read(buf.get()->buf, 534);
-		std::cout << "read 1 size : " << 534 << std::endl;
+		//client.read(buf, 534);
+		//std::cout << "read 1 size : " << 534 << std::endl;
 
 		//}
 		while (1) {
 			int tt = 0;
 			int rr = 0;
 
-			tt = client.read((char*)&qq, sizeof(test));
+			tt = client.channel_.read((char*)&qq, sizeof(test));
 			if (tt < 0) return;
 			std::cout << "need size : " << qq.a << std::endl;
 			while (1) {
-				rr += client.read(buf.get()->buf, qq.a - rr);
+				rr += client.channel_.read(buf, qq.a - rr);
 				if (rr < 0) return;
-				//std::cout << "read size : " << rr << std::endl;
 				if (rr >= qq.a) {
+					std::cout << "read size : " << rr << std::endl;
 					break;
 				}
 			}
@@ -134,7 +135,7 @@ int main() {
 	//	std::this_thread::sleep_for(std::chrono::seconds(1));
 	//}
 	//getchar();
-	//delete[] buf;
+	delete[] buf;
 	system("PAUSE");
 	return 0;
 }

@@ -18,7 +18,7 @@
 class BaseSession {
 public:
 	BaseSession();
-	virtual std::size_t writeHandle(const BufferPacket&) = 0;
+	virtual std::size_t writeHandle(const BufferPacket&, boost::system::error_code& ec) = 0;
 	virtual std::size_t readHandle(char*, const std::size_t&) = 0;
 	virtual void disconnect() = 0;
 
@@ -36,7 +36,7 @@ public:
 	void disconnectSession(boost::shared_ptr<BaseSession> objID);
 	void closeAllSession();
 
-	int write(char* buf, std::size_t size);
+	boost::system::error_code write(char* buf, std::size_t size);
 	int read(char* buf, const std::size_t& size);
 
 	int countAliveSocket();

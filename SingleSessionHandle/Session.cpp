@@ -43,10 +43,8 @@ void Session::disconnect()
 	//socket_.close();
 }
 
-std::size_t Session::writeHandle(const BufferPacket& buffer)
+std::size_t Session::writeHandle(const BufferPacket& buffer, boost::system::error_code& ec)
 {
-	boost::system::error_code ec;
-
 	BufferPacket tmp(buffer.buf_, buffer.size_);
 	//TODO Async
 	//ioc_.post(boost::bind(&Session::do_write, this, tmp));
