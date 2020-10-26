@@ -1,7 +1,7 @@
 #include <iostream>
 
 #define SINGLE 1
-#ifdef SINGLE
+#if SINGLE
 //#include "SingleSession.h"
 
 #include "SessionHandle.h"
@@ -24,9 +24,14 @@ int main() {
 
 	system("PAUSE");
 
+	bool allOut = false;
+
+	sessionServer.channel_.registerDisConnectAllSession([&]() {
+		allOut = true;
+	});
 
 	auto thread = std::thread([&] {
-		for (int i = 1; i <= 2000; i++) {
+		for (int i = 1; (i <= 2000) && !allOut; i++) {
 			if (i % 10 == 0) {
 				str.clear();
 			}
@@ -36,12 +41,14 @@ int main() {
 			char buffer[4096] = { 0, };
 			std::copy(str.c_str(), str.c_str() + str.length(), buffer);
 			//s = ;
-			sessionServer.channel_.write(buffer, str.length()+1);
+			sessionServer.channel_.write(buffer, str.length() + 1);
 		}
-		});
+		std::cout << "end thread" << std::endl;
+	});
 	std::cin.get();
+
 	sessionServer.close();
-	thread.join();
+	//thread.join();
 
 	system("PAUSE");
 
@@ -80,7 +87,7 @@ int main() {
 			s = str.length();
 			test.write(buffer, s);
 		}
-		});
+	});
 	std::cin.get();
 	test.closeAllSocket();
 	thread.join();

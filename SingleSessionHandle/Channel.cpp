@@ -16,17 +16,19 @@ void Channel::registerDisConnectAllSession(boost::function<void()> f)
 
 void Channel::closeAllSession()
 {
-	std::for_each(sessions_.begin(), sessions_.end(),
-		boost::bind(&BaseSession::disconnect, boost::placeholders::_1));
+	for (auto it = sessions_.begin(); it != sessions_.end();) {
+		it++->get()->disconnect();
+	}
 }
 
 boost::system::error_code Channel::write(char* buf, std::size_t size)
 {
 	BufferPacket buffer(buf, size);
 	boost::system::error_code ec;
-	std::for_each(sessions_.begin(), sessions_.end(),
-		boost::bind(&BaseSession::writeHandle, boost::placeholders::_1,
-			boost::ref(buffer), boost::ref(ec)));
+
+	for (auto it = sessions_.begin(); it != sessions_.end();) {
+		it++->get()->writeHandle(boost::ref(buffer), boost::ref(ec));
+	}
 
 	return ec;
 }

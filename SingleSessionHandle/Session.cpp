@@ -36,8 +36,12 @@ void Session::start()
 
 void Session::disconnect()
 {
-	if (socket_.is_open())
+
+
+	if (socket_.is_open()) {
+		socket_.shutdown(boost::asio::socket_base::shutdown_both);
 		socket_.close();
+	}
 	channel_.disconnectSession(shared_from_this());
 	//socket_.shutdown(boost::asio::socket_base::shutdown_both);
 	//socket_.close();
@@ -67,7 +71,7 @@ std::size_t Session::readHandle(char* buf, const std::size_t& size)
 {
 	boost::system::error_code ec;
 
-	std::size_t readSize = 
+	std::size_t readSize =
 		socket_.read_some(boost::asio::buffer(buf, size), ec);
 
 	if (!ec) {
