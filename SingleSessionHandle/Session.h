@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Channel.h"
+//#include "VideoChannel.h"
 
 class Session :
 	public BaseSession,
@@ -20,7 +21,7 @@ public:
 	std::size_t readHandle(char*, const std::size_t&) override;
 	void disconnect() override;
 
-private:
+protected:
 	boost::asio::io_context& ioc_;
 
 	Channel& channel_;

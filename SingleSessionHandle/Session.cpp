@@ -41,12 +41,15 @@ void Session::disconnect()
 		socket_.close();
 	}
 	channel_.disconnectSession(shared_from_this());
+
 	//socket_.shutdown(boost::asio::socket_base::shutdown_both);
 	//socket_.close();
 }
 
-std::size_t Session::writeHandle(const BufferPacket& buffer, boost::system::error_code& ec)
+std::size_t Session::writeHandle(const BufferPacket& buffer,boost::system::error_code& ec)
 {
+	//boost::system::error_code ec;
+
 	BufferPacket tmp(buffer.buf_, buffer.size_);
 	//TODO Async
 	//ioc_.post(boost::bind(&Session::do_write, this, tmp));
@@ -54,7 +57,8 @@ std::size_t Session::writeHandle(const BufferPacket& buffer, boost::system::erro
 		tmp.buf_, buffer.size_), ec);
 
 	if (!ec) {
-		std::cout << __FUNCTION__ << "@" << __LINE__ << "write Size : " << writeSize << std::endl;
+		std::cout << __FUNCTION__ << "@" << __LINE__ 
+			<< "("<<objectID<<")"<<" write Size : " << writeSize << std::endl;
 	}
 	else {
 		std::cout << "Session error ID : " << objectID << std::endl;
@@ -69,7 +73,7 @@ std::size_t Session::readHandle(char* buf, const std::size_t& size)
 {
 	boost::system::error_code ec;
 
-	std::size_t readSize =
+	std::size_t readSize = 
 		socket_.read_some(boost::asio::buffer(buf, size), ec);
 
 	if (!ec) {

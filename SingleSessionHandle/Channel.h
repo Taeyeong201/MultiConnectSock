@@ -29,7 +29,9 @@ protected:
 
 class Channel {
 public:
-	void joinSession(boost::shared_ptr<BaseSession>);
+	Channel(boost::asio::io_context& ioc);
+
+	virtual void joinSession(boost::shared_ptr<BaseSession>);
 
 	void registerDisConnectAllSession(boost::function<void()> f);
 
@@ -43,10 +45,13 @@ public:
 
 	std::set<boost::shared_ptr<BaseSession>> sessions_;
 
-private:
+protected:
+	void checkSession();
+
 	//TODO MultiSession
 	std::queue<std::shared_ptr<BufferPacket>> inBufferQueue;
 
 	boost::function<void()> disconnectAll;
-	int SocketActivateCount;
+	int SocketActivateCount = 0;
+	boost::asio::io_context& ioc_;
 };

@@ -18,7 +18,8 @@ boost::asio::io_context SessionHandle::IOCtx;
 
 SessionHandle::SessionHandle()
 	:
-	_lock_work(std::make_shared<boost::asio::io_context::work>(IOCtx))
+	_lock_work(std::make_shared<boost::asio::io_context::work>(IOCtx)),
+	channel_(IOCtx)/*, videoChannel_(IOCtx)*/
 {
 	for (int i = 0; i < 4; i++)
 		_IO_Workers.create_thread(boost::bind(&boost::asio::io_context::run, &IOCtx));
@@ -53,6 +54,11 @@ void SessionHandle::initNodelayOpt(bool onoff)
 	nodelay_ = onoff;
 }
 
+//void SessionHandle::initVideoChannel(bool onoff)
+//{
+//	isVideoChannel_ = onoff;
+//}
+
 void SessionHandle::acceptor()
 {
 	boost::asio::ip::tcp::socket socket(IOCtx);
@@ -69,7 +75,11 @@ void SessionHandle::acceptor()
 			<< socket.remote_endpoint().port() << std::endl;
 
 		socket.set_option(boost::asio::ip::tcp::no_delay(nodelay_));
-		boost::shared_ptr<Session> session(new Session(socket, IOCtx, channel_));
+		boost::shared_ptr<Session> session;
+		//if (isVideoChannel_)
+		//	session = boost::shared_ptr<Session>(new Session(socket, IOCtx, videoChannel_));
+		//else
+			session = boost::shared_ptr<Session>(new Session(socket, IOCtx, channel_));
 		session->start();
 
 	}
@@ -93,7 +103,11 @@ void SessionHandle::async_acceptor()
 					<< socket.remote_endpoint().port() << std::endl;
 
 				socket.set_option(boost::asio::ip::tcp::no_delay(nodelay_));
-				boost::shared_ptr<Session> session(new Session(socket, IOCtx, channel_));
+				boost::shared_ptr<Session> session;
+				//if (isVideoChannel_)
+				//	session = boost::shared_ptr<Session>(new Session(socket, IOCtx, videoChannel_));
+				//else
+					session = boost::shared_ptr<Session>(new Session(socket, IOCtx, channel_));
 				session->start();
 
 				async_acceptor();

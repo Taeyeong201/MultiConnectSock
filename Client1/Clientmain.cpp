@@ -1,4 +1,4 @@
-#define SINGLE 0
+#define SINGLE 1
 #if SINGLE
 #include "SessionHandle.h"
 
@@ -28,13 +28,16 @@ int main() {
 				<< std::string(buffer, readSize) << std::endl;
 			else break;
 		}
+		std::cout << "end thread" << std::endl;
+
 	});
-	getchar();
+
 
 	testes.join();
 
 	sessionClient.close();
 
+	getchar();
 
 	return 0;
 }

@@ -12,6 +12,7 @@ public:
 	int initClientMode(const std::string& serverIP, const unsigned short port);
 
 	void initNodelayOpt(bool onoff);
+	//void initVideoChannel(bool onoff);
 
 	void acceptor();
 	void async_acceptor();
@@ -21,6 +22,7 @@ public:
 	void close();
 
 	Channel channel_;
+	//VideoChannel videoChannel_;
 
 private:
 	boost::thread_group _IO_Workers;
@@ -30,6 +32,7 @@ private:
 	boost::asio::ip::tcp::endpoint address;
 
 	bool nodelay_ = false;
+	//bool isVideoChannel_ = false;
 
 	static boost::asio::io_context IOCtx;
 };
