@@ -51,6 +51,6 @@ void Channel::disconnectSession(boost::shared_ptr<BaseSession> session)
 {
 	sessions_.erase(session);
 	if (sessions_.empty()) {
-		//TODO AllDisconnect CallBack
+		disconnectAll();
 	}
 }

@@ -36,8 +36,6 @@ void Session::start()
 
 void Session::disconnect()
 {
-
-
 	if (socket_.is_open()) {
 		socket_.shutdown(boost::asio::socket_base::shutdown_both);
 		socket_.close();

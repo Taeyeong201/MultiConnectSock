@@ -1,4 +1,4 @@
-#define SINGLE 1
+#define SINGLE 0
 #if SINGLE
 #include "SessionHandle.h"
 
